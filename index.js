@@ -32,7 +32,9 @@ app.use((req, res, next) => {
 
 // Retrieve all posts (HTTP GET request)
 app.get("/posts", async (req, res) => {
-  res.json(DUMMY_POSTS);
+  const allPosts = await Post.find();
+
+  res.status(201).json(allPosts);
 });
 
 // Retrieve a specific post by ID (HTTP GET request)
@@ -67,7 +69,7 @@ app.patch("/posts/:id", async (req, res) => {
 
   await selectedPost.save();
 
-  res.status(200).json({ message: "Post updated.", selectedPost });
+  res.status(201).json({ message: "Post updated.", selectedPost });
 });
 
 // Delete a post (HTTP DELETE request)
