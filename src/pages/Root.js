@@ -1,13 +1,16 @@
 import { Outlet } from "react-router";
+import { Container } from "react-bootstrap";
 import MainNavigation from "../components/MainNavigation";
 
 function RootLayout() {
   return (
     <>
       <MainNavigation />
-      <main>
-        <Outlet />
-      </main>
+      <Container>
+        <main>
+          <Outlet />
+        </main>
+      </Container>
     </>
   );
 }
