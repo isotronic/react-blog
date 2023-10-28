@@ -12,6 +12,7 @@ mongoose.connect("mongodb://127.0.0.1:27017/blogDB", { useNewUrlParser: true });
 const postSchema = new mongoose.Schema({
   title: { type: String, required: [true, "Please specify a title."] },
   content: { type: String, required: [true, "The post content cannot be empty."] },
+  imageURL: { type: String, required: [true, "Please provide an image url."] },
   author: { type: String },
   date: { type: Date, default: () => Date.now(), immutable: true },
 });
@@ -51,6 +52,7 @@ app.post("/posts", async (req, res) => {
   const newPost = await Post.create({
     title: req.body.title,
     content: req.body.content,
+    imageURL: req.body.imageURL,
     author: req.body.author,
     date: currentDate,
   });
@@ -65,6 +67,7 @@ app.patch("/posts/:id", async (req, res) => {
 
   if (req.body.title) selectedPost.title = req.body.title;
   if (req.body.content) selectedPost.content = req.body.content;
+  if (req.body.imageURL) selectedPost.imageURL = req.body.imageURL;
   if (req.body.author) selectedPost.author = req.body.author;
 
   await selectedPost.save();
