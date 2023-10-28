@@ -33,7 +33,7 @@ app.use((req, res, next) => {
 
 // Retrieve all posts (HTTP GET request)
 app.get("/posts", async (req, res) => {
-  const allPosts = await Post.find();
+  const allPosts = await Post.find().sort({ date: -1 });
 
   res.status(201).json(allPosts);
 });
@@ -47,7 +47,7 @@ app.get("/posts/:id", async (req, res) => {
 });
 
 // Create a new post (HTTP POST request)
-app.post("/posts", async (req, res) => {
+app.post("/new", async (req, res) => {
   const currentDate = new Date().toJSON();
   const newPost = await Post.create({
     title: req.body.title,
@@ -61,7 +61,7 @@ app.post("/posts", async (req, res) => {
 });
 
 // Update a post (HTTP PATCH request)
-app.patch("/posts/:id", async (req, res) => {
+app.patch("/edit/:id", async (req, res) => {
   const postId = req.params.id;
   const selectedPost = await Post.findById(postId).exec();
 
@@ -76,7 +76,7 @@ app.patch("/posts/:id", async (req, res) => {
 });
 
 // Delete a post (HTTP DELETE request)
-app.delete("/posts/:id", async (req, res) => {
+app.delete("/delete/:id", async (req, res) => {
   const postId = req.params.id;
   const selectedPost = await Post.deleteOne({ _id: postId });
 
