@@ -3,7 +3,7 @@ import bodyParser from "body-parser";
 import mongoose from "mongoose";
 
 const app = express();
-const PORT = 3000;
+const PORT = 4000;
 
 // Connect to MongoDB database
 mongoose.connect("mongodb://127.0.0.1:27017/blogDB", { useNewUrlParser: true });
