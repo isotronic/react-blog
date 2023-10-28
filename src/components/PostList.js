@@ -1,4 +1,3 @@
-import Container from "react-bootstrap/Container";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
@@ -13,13 +12,13 @@ function PostList({ posts }) {
         {posts.map((post) => {
           return (
             <Col key={post._id}>
-              <Card key={post._id} className="m-3">
-                <Card.Img variant="top" src="https://placehold.co/600x400" />
+              <Card className="m-3">
+                <Card.Img variant="top" src={post.imageURL ? post.imageURL : "https://placehold.co/600x400"} />
                 <Card.Body>
                   <Card.Title>{post.title}</Card.Title>
                   <Card.Text>{post.content}</Card.Text>
                   <Card.Subtitle>
-                    {post.author} on {post.date}
+                    {post.author} on {post.date.slice(0, post.date.indexOf("T"))}
                   </Card.Subtitle>
                   <LinkContainer to={`/posts/${post._id}`}>
                     <Button variant="secondary" className="m-2">

@@ -2,9 +2,9 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import RootLayout from "./pages/Root";
 import ErrorPage from "./pages/Error";
 import HomePage from "./pages/Home";
-import PostsPage from "./pages/Posts";
+import PostsPage, { postsLoader } from "./pages/Posts";
 import PostsRootLayout from "./pages/PostsRoot";
-import SinglePostPage from "./pages/SinglePost";
+import SinglePostPage, { postLoader, deletePostAction } from "./pages/SinglePost";
 import EditPostPage from "./pages/EditPost";
 import NewPostPage from "./pages/NewPost";
 
@@ -19,12 +19,14 @@ const router = createBrowserRouter([
         path: "posts",
         element: <PostsRootLayout />,
         children: [
-          { index: true, element: <PostsPage /> },
+          { index: true, element: <PostsPage />, loader: postsLoader },
           { path: "new", element: <NewPostPage /> },
           {
             path: ":postId",
+            id: "single-post",
+            loader: postLoader,
             children: [
-              { index: true, element: <SinglePostPage /> },
+              { index: true, element: <SinglePostPage />, action: deletePostAction },
               { path: "edit", element: <EditPostPage /> },
             ],
           },

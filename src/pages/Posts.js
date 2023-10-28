@@ -1,34 +1,32 @@
+import { Suspense } from "react";
 import PostList from "../components/PostList";
-
-const DUMMY_POSTS = [
-  {
-    _id: "1",
-    title: "The Rise of Decentralized Finance",
-    content:
-      "Decentralized Finance (DeFi) is an emerging and rapidly evolving field in the blockchain industry. It refers to the shift from traditional, centralized financial systems to peer-to-peer finance enabled by decentralized technologies built on Ethereum and other blockchains. With the promise of reduced dependency on the traditional banking sector, DeFi platforms offer a wide range of services, from lending and borrowing to insurance and trading.",
-    author: "Alex Thompson",
-    date: "2023-08-01T10:00:00Z",
-  },
-  {
-    _id: "2",
-    title: "The Impact of Artificial Intelligence on Modern Businesses",
-    content:
-      "Artificial Intelligence (AI) is no longer a concept of the future. It's very much a part of our present, reshaping industries and enhancing the capabilities of existing systems. From automating routine tasks to offering intelligent insights, AI is proving to be a boon for businesses. With advancements in machine learning and deep learning, businesses can now address previously insurmountable problems and tap into new opportunities.",
-    author: "Mia Williams",
-    date: "2023-08-05T14:30:00Z",
-  },
-  {
-    _id: "3",
-    title: "Sustainable Living: Tips for an Eco-Friendly Lifestyle",
-    content:
-      "Sustainability is more than just a buzzword; it's a way of life. As the effects of climate change become more pronounced, there's a growing realization about the need to live sustainably. From reducing waste and conserving energy to supporting eco-friendly products, there are numerous ways we can make our daily lives more environmentally friendly. This post will explore practical tips and habits that can make a significant difference.",
-    author: "Samuel Green",
-    date: "2023-08-10T09:15:00Z",
-  },
-];
+import { useLoaderData, json, defer, Await } from "react-router-dom";
 
 function PostsPage() {
-  return <PostList posts={DUMMY_POSTS} />;
+  const { posts } = useLoaderData();
+
+  return (
+    <Suspense fallback="Loading...">
+      <Await resolve={posts}>{(loadedPosts) => <PostList posts={loadedPosts} />}</Await>
+    </Suspense>
+  );
 }
 
 export default PostsPage;
+
+async function loadPosts() {
+  const response = await fetch("http://localhost:4000/posts");
+
+  if (!response.ok) {
+    throw json({ message: "Could not load posts." }, { status: 500 });
+  } else {
+    const resData = await response.json();
+    return resData;
+  }
+}
+
+export function postsLoader() {
+  return defer({
+    posts: loadPosts(),
+  });
+}
