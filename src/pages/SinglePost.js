@@ -1,9 +1,11 @@
 import { Suspense } from "react";
 import { Await, defer, json, redirect, useRouteLoaderData } from "react-router-dom";
 import PostView from "../components/PostView";
+import usePageTitle from "../utils/usePageTitle";
 
 function SinglePostPage() {
   const { post } = useRouteLoaderData("single-post");
+  usePageTitle(post.title);
 
   return (
     <Suspense fallback="Loading...">

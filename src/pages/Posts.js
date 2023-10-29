@@ -1,9 +1,11 @@
 import { Suspense } from "react";
 import PostList from "../components/PostList";
 import { useLoaderData, json, defer, Await } from "react-router-dom";
+import usePageTitle from "../utils/usePageTitle";
 
 function PostsPage() {
   const { posts } = useLoaderData();
+  usePageTitle("All Posts");
 
   return (
     <Suspense fallback="Loading...">
