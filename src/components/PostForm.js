@@ -11,14 +11,16 @@ function PostForm({ method, post }) {
   const navigate = useNavigate();
 
   const schema = yup.object().shape({
-    title: yup.string().required(),
-    content: yup.string().required(),
-    imageURL: yup.string().url().required(),
+    title: yup.string().required("You need to give your Post a title."),
+    content: yup.string().required("Post content cannot be empty!"),
+    imageURL: yup.string().url().required("Please provide an image URL."),
   });
 
-  const titleValue = post ? post.title : "";
-  const contentValue = post ? post.content : "";
-  const imageURLValue = post ? post.imageURL : "";
+  const initialValues = {
+    title: post ? post.title : "",
+    content: post ? post.content : "",
+    imageURL: post ? post.imageURL : "",
+  };
 
   function cancelHandler() {
     navigate("..");
@@ -55,15 +57,7 @@ function PostForm({ method, post }) {
   return (
     <>
       <h1>Edit Post</h1>
-      <Formik
-        validationSchema={schema}
-        onSubmit={submitHandler}
-        initialValues={{
-          title: titleValue,
-          content: contentValue,
-          imageURL: imageURLValue,
-        }}
-      >
+      <Formik validationSchema={schema} onSubmit={submitHandler} initialValues={initialValues}>
         {({ handleSubmit, handleChange, values, touched, errors }) => (
           <Form noValidate method={method} onSubmit={handleSubmit}>
             <Row className="justify-content-md-center">
