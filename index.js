@@ -1,6 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
+import { body, param, validationResult } from "express-validator";
 
 const app = express();
 const PORT = 4000;
@@ -39,7 +40,12 @@ app.get("/posts", async (req, res) => {
 });
 
 // Retrieve a specific post by ID (HTTP GET request)
-app.get("/posts/:id", async (req, res) => {
+app.get("/posts/:id", param("id").trim().notEmpty().isMongoId(), async (req, res) => {
+  const result = validationResult(req).isEmpty();
+  if (!result) {
+    return res.status(422).json({ title: "Invalid request.", message: "ID is not a valid ObjectId." });
+  }
+
   const postId = req.params.id;
   const selectedPost = await Post.findById(postId).exec();
 
@@ -47,36 +53,66 @@ app.get("/posts/:id", async (req, res) => {
 });
 
 // Create a new post (HTTP POST request)
-app.post("/new", async (req, res) => {
-  const currentDate = new Date().toJSON();
-  const newPost = await Post.create({
-    title: req.body.title,
-    content: req.body.content,
-    imageURL: req.body.imageURL,
-    author: req.body.author,
-    date: currentDate,
-  });
+app.post(
+  "/new",
+  body("title").trim().notEmpty().isString(),
+  body("content").trim().notEmpty().isString(),
+  body("imageURL").trim().notEmpty().isString().isURL(),
+  async (req, res) => {
+    const result = validationResult(req).isEmpty();
+    if (!result) {
+      const errors = validationResult(req).mapped();
+      return res.status(422).json(errors);
+    }
 
-  res.status(201).json(newPost);
-});
+    const currentDate = new Date().toJSON();
+    const newPost = await Post.create({
+      title: req.body.title,
+      content: req.body.content,
+      imageURL: req.body.imageURL,
+      author: req.body.author,
+      date: currentDate,
+    });
+
+    res.status(201).json(newPost);
+  }
+);
 
 // Update a post (HTTP PATCH request)
-app.patch("/edit/:id", async (req, res) => {
-  const postId = req.params.id;
-  const selectedPost = await Post.findById(postId).exec();
+app.patch(
+  "/edit/:id",
+  param("id").trim().notEmpty().isMongoId(),
+  body("title").trim().notEmpty().isString(),
+  body("content").trim().notEmpty().isString(),
+  body("imageURL").trim().notEmpty().isString().isURL(),
+  async (req, res) => {
+    const result = validationResult(req).isEmpty();
+    if (!result) {
+      const errors = validationResult(req).mapped();
+      return res.status(422).json(errors);
+    }
 
-  if (req.body.title) selectedPost.title = req.body.title;
-  if (req.body.content) selectedPost.content = req.body.content;
-  if (req.body.imageURL) selectedPost.imageURL = req.body.imageURL;
-  if (req.body.author) selectedPost.author = req.body.author;
+    const postId = req.params.id;
+    const selectedPost = await Post.findById(postId).exec();
 
-  await selectedPost.save();
+    if (req.body.title) selectedPost.title = req.body.title;
+    if (req.body.content) selectedPost.content = req.body.content;
+    if (req.body.imageURL) selectedPost.imageURL = req.body.imageURL;
+    if (req.body.author) selectedPost.author = req.body.author;
 
-  res.status(201).json({ message: "Post updated.", selectedPost });
-});
+    await selectedPost.save();
+
+    res.status(201).json({ message: "Post updated.", selectedPost });
+  }
+);
 
 // Delete a post (HTTP DELETE request)
-app.delete("/delete/:id", async (req, res) => {
+app.delete("/delete/:id", param("id").trim().notEmpty().isMongoId(), async (req, res) => {
+  const result = validationResult(req).isEmpty();
+  if (!result) {
+    return res.status(422).json({ title: "Invalid request.", message: "ID is not a valid ObjectId." });
+  }
+
   const postId = req.params.id;
   const selectedPost = await Post.deleteOne({ _id: postId });
 
