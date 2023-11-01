@@ -1,24 +1,14 @@
 import express from "express";
 import bodyParser from "body-parser";
-import mongoose from "mongoose";
+import "dotenv/config";
 import { body, param, validationResult } from "express-validator";
+import { connectDB, User, Post } from "./db.js";
+import { authenticate, login, register } from "./auth.js";
 
 const app = express();
-const PORT = 4000;
+const { PORT = 4000 } = process.env;
 
-// Connect to MongoDB database
-mongoose.connect("mongodb://127.0.0.1:27017/blogDB", { useNewUrlParser: true });
-
-// Define the Post schema and model for MongoDB
-const postSchema = new mongoose.Schema({
-  title: { type: String, required: [true, "Please specify a title."] },
-  content: { type: String, required: [true, "The post content cannot be empty."] },
-  imageURL: { type: String, required: [true, "Please provide an image url."] },
-  author: { type: String },
-  date: { type: Date, default: () => Date.now(), immutable: true },
-});
-
-const Post = mongoose.model("Post", postSchema);
+connectDB();
 
 // Middleware for parsing JSON and URL-encoded data
 app.use(bodyParser.json());
@@ -32,6 +22,23 @@ app.use((req, res, next) => {
   next();
 });
 
+// Register a new user (HTTP POST request)
+app.post(
+  "/register",
+  body("name").trim().notEmpty().isString(),
+  body("email").trim().notEmpty().isString().isEmail(),
+  body("password").trim().notEmpty().isString(),
+  register
+);
+
+// Login the user (HTTP POST request)
+app.post(
+  "/login",
+  body("email").trim().notEmpty().isString().isEmail(),
+  body("password").trim().notEmpty().isString(),
+  login
+);
+
 // Retrieve all posts (HTTP GET request)
 app.get("/posts", async (req, res) => {
   const allPosts = await Post.find().sort({ date: -1 });
@@ -43,11 +50,17 @@ app.get("/posts", async (req, res) => {
 app.get("/posts/:id", param("id").trim().notEmpty().isMongoId(), async (req, res) => {
   const result = validationResult(req).isEmpty();
   if (!result) {
-    return res.status(422).json({ title: "Invalid request.", message: "ID is not a valid ObjectId." });
+    return res
+      .status(422)
+      .json({ title: "Invalid request", message: "ID is not a valid ObjectId" });
   }
 
   const postId = req.params.id;
   const selectedPost = await Post.findById(postId).exec();
+
+  if (!selectedPost) {
+    return res.status(404).json({ message: "Post doesn't exist" });
+  }
 
   res.status(201).json(selectedPost);
 });
@@ -58,6 +71,7 @@ app.post(
   body("title").trim().notEmpty().isString(),
   body("content").trim().notEmpty().isString(),
   body("imageURL").trim().notEmpty().isString().isURL(),
+  authenticate,
   async (req, res) => {
     const result = validationResult(req).isEmpty();
     if (!result) {
@@ -70,7 +84,7 @@ app.post(
       title: req.body.title,
       content: req.body.content,
       imageURL: req.body.imageURL,
-      author: req.body.author,
+      author: req.user._id,
       date: currentDate,
     });
 
@@ -85,6 +99,7 @@ app.patch(
   body("title").trim().notEmpty().isString(),
   body("content").trim().notEmpty().isString(),
   body("imageURL").trim().notEmpty().isString().isURL(),
+  authenticate,
   async (req, res) => {
     const result = validationResult(req).isEmpty();
     if (!result) {
@@ -95,29 +110,53 @@ app.patch(
     const postId = req.params.id;
     const selectedPost = await Post.findById(postId).exec();
 
-    if (req.body.title) selectedPost.title = req.body.title;
-    if (req.body.content) selectedPost.content = req.body.content;
-    if (req.body.imageURL) selectedPost.imageURL = req.body.imageURL;
-    if (req.body.author) selectedPost.author = req.body.author;
+    if (!selectedPost) {
+      return res.status(404).json({ message: "Post doesn't exist" });
+    }
 
-    await selectedPost.save();
+    if (selectedPost.author.equals(req.user._id)) {
+      if (req.body.title) selectedPost.title = req.body.title;
+      if (req.body.content) selectedPost.content = req.body.content;
+      if (req.body.imageURL) selectedPost.imageURL = req.body.imageURL;
 
-    res.status(201).json({ message: "Post updated.", selectedPost });
+      await selectedPost.save();
+
+      res.status(201).json({ message: "Post updated", selectedPost });
+    } else {
+      return res.status(401).json({ message: "You are not authorized to edit this post" });
+    }
   }
 );
 
 // Delete a post (HTTP DELETE request)
-app.delete("/delete/:id", param("id").trim().notEmpty().isMongoId(), async (req, res) => {
-  const result = validationResult(req).isEmpty();
-  if (!result) {
-    return res.status(422).json({ title: "Invalid request.", message: "ID is not a valid ObjectId." });
+app.delete(
+  "/delete/:id",
+  param("id").trim().notEmpty().isMongoId(),
+  authenticate,
+  async (req, res) => {
+    const result = validationResult(req).isEmpty();
+    if (!result) {
+      return res
+        .status(422)
+        .json({ title: "Invalid request", message: "ID is not a valid ObjectId" });
+    }
+
+    const postId = req.params.id;
+    const selectedPost = await Post.findById(postId).exec();
+
+    if (!selectedPost) {
+      return res.status(404).json({ message: "Post doesn't exist" });
+    }
+
+    if (selectedPost.author.equals(req.user._id)) {
+      await Post.deleteOne({ _id: postId });
+
+      res.status(201).json({ message: "Post deleted", selectedPost });
+    } else {
+      return res.status(401).json({ message: "You are not authorized to delete this post" });
+    }
   }
-
-  const postId = req.params.id;
-  const selectedPost = await Post.deleteOne({ _id: postId });
-
-  res.status(201).json({ message: "Post deleted.", selectedPost });
-});
+);
 
 // Start the Express app and listen on the specified port
 app.listen(PORT, () => console.log(`App is listening on port: ${PORT}.`));
