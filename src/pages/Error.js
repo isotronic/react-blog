@@ -23,7 +23,7 @@ function ErrorPage() {
       <MainNavigation />
       <main>
         <h1>{title}</h1>
-        <p>{message}</p>
+        <p style={{ "text-align": "center" }}>{message}</p>
       </main>
     </>
   );

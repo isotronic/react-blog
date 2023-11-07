@@ -11,9 +11,9 @@ function PostForm({ method, post }) {
   const navigate = useNavigate();
 
   const schema = yup.object().shape({
-    title: yup.string().required("You need to give your Post a title."),
-    content: yup.string().required("Post content cannot be empty!"),
-    imageURL: yup.string().url().required("Please provide an image URL."),
+    title: yup.string().trim().required("You need to give your Post a title."),
+    content: yup.string().trim().required("Post content cannot be empty!"),
+    imageURL: yup.string().trim().url("Not a valid URL.").required("Please provide an image URL."),
   });
 
   const initialValues = {
@@ -74,7 +74,6 @@ function PostForm({ method, post }) {
                   ></Form.Control>
                   <Form.Control.Feedback type="invalid">{errors.title}</Form.Control.Feedback>
                 </Form.Group>
-
                 <Form.Group className="mb-3">
                   <Form.Label>Image URL</Form.Label>
                   <Form.Control

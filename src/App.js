@@ -7,6 +7,7 @@ import PostsRootLayout from "./pages/PostsRoot";
 import SinglePostPage, { postLoader, deletePostAction } from "./pages/SinglePost";
 import EditPostPage from "./pages/EditPost";
 import NewPostPage from "./pages/NewPost";
+import AuthPage from "./pages/Auth";
 
 const router = createBrowserRouter([
   {
@@ -16,11 +17,11 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       {
-        path: "posts",
+        path: "/posts",
         element: <PostsRootLayout />,
         children: [
           { index: true, element: <PostsPage />, loader: postsLoader },
-          { path: "new", element: <NewPostPage /> },
+          { path: "/posts/new", element: <NewPostPage /> },
           {
             path: ":postId",
             id: "single-post",
@@ -30,6 +31,13 @@ const router = createBrowserRouter([
               { path: "edit", element: <EditPostPage /> },
             ],
           },
+        ],
+      },
+      {
+        path: "/auth",
+        children: [
+          { path: "login", element: <AuthPage mode="login" /> },
+          { path: "register", element: <AuthPage mode="register" /> },
         ],
       },
     ],
