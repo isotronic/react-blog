@@ -1,10 +1,11 @@
 import { Suspense } from "react";
-import { Await, defer, json, redirect, useRouteLoaderData } from "react-router-dom";
+import { Await, defer, json, useRouteLoaderData } from "react-router-dom";
 import PostView from "../components/PostView";
 import usePageTitle from "../utils/usePageTitle";
 
 function SinglePostPage() {
   const { post } = useRouteLoaderData("single-post");
+
   usePageTitle(post.title);
 
   return (
@@ -31,16 +32,4 @@ export async function postLoader({ params }) {
   return defer({
     post: await loadPost(params.postId),
   });
-}
-
-export async function deletePostAction({ request, params }) {
-  const response = await fetch("http://localhost:4000/delete/" + params.postId, {
-    method: request.method,
-  });
-
-  if (!response.ok) {
-    throw json({ message: "Could not delete the post with id: " + params.postId }, { status: 500 });
-  }
-
-  return redirect("/posts");
 }

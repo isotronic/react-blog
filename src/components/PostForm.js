@@ -5,10 +5,12 @@ import Col from "react-bootstrap/Col";
 import { Formik } from "formik";
 import * as yup from "yup";
 import { useNavigate } from "react-router";
-import { json } from "react-router-dom";
+import { getAuthToken } from "../utils/auth";
+import { useState } from "react";
 
 function PostForm({ method, post }) {
   const navigate = useNavigate();
+  const [error, setError] = useState();
 
   const schema = yup.object().shape({
     title: yup.string().trim().required("You need to give your Post a title."),
@@ -39,17 +41,22 @@ function PostForm({ method, post }) {
       endpoint = "http://localhost:4000/edit/" + post._id;
     }
 
+    const token = getAuthToken();
+    if (token === "EXPIRED") return setError("Your token has expired. Please login again.");
+
     const response = await fetch(endpoint, {
       method: method,
       headers: {
         "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
       },
       body: JSON.stringify(data),
     });
 
-    if (!response.ok) {
-      throw json({ message: "Could not save event." }, { status: 500 });
-    }
+    if (response.status === 401) return setError("You are not authorized to do this.");
+    if (response.status === 404)
+      return setError("The user you are trying to authenticate with doesn't exist.");
+    if (!response.ok) return setError("Could not save the post.");
 
     navigate("/posts");
   }
@@ -57,6 +64,7 @@ function PostForm({ method, post }) {
   return (
     <>
       <h1>Edit Post</h1>
+      {error && <p style={{ textAlign: "center" }}>{error}</p>}
       <Formik validationSchema={schema} onSubmit={submitHandler} initialValues={initialValues}>
         {({ handleSubmit, handleChange, values, touched, errors }) => (
           <Form noValidate method={method} onSubmit={handleSubmit}>

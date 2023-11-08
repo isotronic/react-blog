@@ -4,16 +4,20 @@ import ErrorPage from "./pages/Error";
 import HomePage from "./pages/Home";
 import PostsPage, { postsLoader } from "./pages/Posts";
 import PostsRootLayout from "./pages/PostsRoot";
-import SinglePostPage, { postLoader, deletePostAction } from "./pages/SinglePost";
+import SinglePostPage, { postLoader } from "./pages/SinglePost";
 import EditPostPage from "./pages/EditPost";
 import NewPostPage from "./pages/NewPost";
 import AuthPage from "./pages/Auth";
+import { checkAuthLoader, tokenLoader } from "./utils/auth";
+import { logoutAction } from "./pages/Logout";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <RootLayout />,
     errorElement: <ErrorPage />,
+    id: "root",
+    loader: tokenLoader,
     children: [
       { index: true, element: <HomePage /> },
       {
@@ -21,14 +25,17 @@ const router = createBrowserRouter([
         element: <PostsRootLayout />,
         children: [
           { index: true, element: <PostsPage />, loader: postsLoader },
-          { path: "/posts/new", element: <NewPostPage /> },
+          { path: "/posts/new", element: <NewPostPage />, loader: checkAuthLoader },
           {
             path: ":postId",
             id: "single-post",
             loader: postLoader,
             children: [
-              { index: true, element: <SinglePostPage />, action: deletePostAction },
-              { path: "edit", element: <EditPostPage /> },
+              {
+                index: true,
+                element: <SinglePostPage />,
+              },
+              { path: "edit", element: <EditPostPage />, loader: checkAuthLoader },
             ],
           },
         ],
@@ -40,6 +47,7 @@ const router = createBrowserRouter([
           { path: "register", element: <AuthPage mode="register" /> },
         ],
       },
+      { path: "/logout", action: logoutAction },
     ],
   },
 ]);
