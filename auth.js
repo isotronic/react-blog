@@ -16,15 +16,15 @@ export async function register(req, res, next) {
   const { name, email, password } = req.body;
 
   try {
-    // const hashedPassword = await bcrypt.hash(password, 10);
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.json({ message: "User already exists" });
+      return res.status(409).json({ message: "User already exists" });
     }
 
     const user = new User({ name, email, password });
     await user.save();
-    res.json({ message: "Registration successful" });
+    const token = jwt.sign({ userId: user._id }, SECRET_KEY, { expiresIn: "1 hour" });
+    res.json({ token });
   } catch (error) {
     next(error);
   }

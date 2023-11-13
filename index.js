@@ -2,12 +2,11 @@ import express from "express";
 import bodyParser from "body-parser";
 import "dotenv/config";
 import { body, param, validationResult } from "express-validator";
-import { connectDB, User, Post } from "./db.js";
+import { connectDB, Post } from "./db.js";
 import { authenticate, login, register } from "./auth.js";
 
 const app = express();
 const { PORT = 4000 } = process.env;
-
 connectDB();
 
 // Middleware for parsing JSON and URL-encoded data
@@ -41,7 +40,7 @@ app.post(
 
 // Retrieve all posts (HTTP GET request)
 app.get("/posts", async (req, res) => {
-  const allPosts = await Post.find().sort({ date: -1 });
+  const allPosts = await Post.find().populate("author").sort({ date: -1 });
 
   res.status(201).json(allPosts);
 });
@@ -56,7 +55,7 @@ app.get("/posts/:id", param("id").trim().notEmpty().isMongoId(), async (req, res
   }
 
   const postId = req.params.id;
-  const selectedPost = await Post.findById(postId).exec();
+  const selectedPost = await Post.findById(postId).populate("author").exec();
 
   if (!selectedPost) {
     return res.status(404).json({ message: "Post doesn't exist" });
@@ -113,7 +112,7 @@ app.patch(
     if (!selectedPost) {
       return res.status(404).json({ message: "Post doesn't exist" });
     }
-
+    console.log(req.user);
     if (selectedPost.author.equals(req.user._id)) {
       if (req.body.title) selectedPost.title = req.body.title;
       if (req.body.content) selectedPost.content = req.body.content;
