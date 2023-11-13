@@ -40,7 +40,7 @@ function PostView({ post }) {
         <Card.Title>{post.title}</Card.Title>
         <Card.Text>{post.content}</Card.Text>
         <Card.Subtitle>
-          {post.author} on {post.date.slice(0, post.date.indexOf("T"))}
+          {post.author.name} on {post.date.slice(0, post.date.indexOf("T"))}
         </Card.Subtitle>
         {token && (
           <>
