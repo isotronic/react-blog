@@ -9,7 +9,12 @@ function PostsPage() {
 
   return (
     <Suspense fallback="Loading...">
-      <Await resolve={posts}>{(loadedPosts) => <PostList posts={loadedPosts} />}</Await>
+      <Await
+        resolve={posts}
+        errorElement={<p style={{ textAlign: "center" }}>There are no posts.</p>}
+      >
+        {(loadedPosts) => <PostList posts={loadedPosts} />}
+      </Await>
     </Suspense>
   );
 }
