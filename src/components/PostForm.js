@@ -58,7 +58,7 @@ function PostForm({ method, post }) {
       return setError("The user you are trying to authenticate with doesn't exist.");
     if (!response.ok) return setError("Could not save the post.");
 
-    navigate("/posts");
+    navigate("..");
   }
 
   return (

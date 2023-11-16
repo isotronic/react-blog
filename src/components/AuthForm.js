@@ -77,8 +77,10 @@ function AuthForm({ mode }) {
 
     const resData = await response.json();
     const token = resData.token;
+    const userId = resData.userId;
 
     localStorage.setItem("token", token);
+    localStorage.setItem("userId", userId);
     const expiration = new Date();
     expiration.setHours(expiration.getHours() + 1);
     localStorage.setItem("expiration", expiration.toISOString());

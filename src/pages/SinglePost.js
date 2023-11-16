@@ -1,10 +1,10 @@
 import { Suspense } from "react";
-import { Await, defer, json, useRouteLoaderData } from "react-router-dom";
+import { Await, defer, json, useLoaderData } from "react-router-dom";
 import PostView from "../components/PostView";
 import usePageTitle from "../utils/usePageTitle";
 
 function SinglePostPage() {
-  const { post } = useRouteLoaderData("single-post");
+  const { post } = useLoaderData();
 
   usePageTitle(post.title);
 

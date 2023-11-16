@@ -25,7 +25,10 @@ function MainNavigation() {
         <Nav>
           {token && (
             <>
-              <LinkContainer to="/posts/new">
+              <LinkContainer to="/admin">
+                <Nav.Link>Admin</Nav.Link>
+              </LinkContainer>
+              <LinkContainer to="/admin/new">
                 <Nav.Link>New Post</Nav.Link>
               </LinkContainer>
               <Form action="/logout" method="post">

@@ -10,6 +10,7 @@ import NewPostPage from "./pages/NewPost";
 import AuthPage from "./pages/Auth";
 import { checkAuthLoader, tokenLoader } from "./utils/auth";
 import { logoutAction } from "./pages/Logout";
+import AdminPage, { adminPostsLoader } from "./pages/Admin";
 
 const router = createBrowserRouter([
   {
@@ -25,18 +26,11 @@ const router = createBrowserRouter([
         element: <PostsRootLayout />,
         children: [
           { index: true, element: <PostsPage />, loader: postsLoader },
-          { path: "/posts/new", element: <NewPostPage />, loader: checkAuthLoader },
+
           {
             path: ":postId",
-            id: "single-post",
             loader: postLoader,
-            children: [
-              {
-                index: true,
-                element: <SinglePostPage />,
-              },
-              { path: "edit", element: <EditPostPage />, loader: checkAuthLoader },
-            ],
+            element: <SinglePostPage />,
           },
         ],
       },
@@ -45,6 +39,16 @@ const router = createBrowserRouter([
         children: [
           { path: "login", element: <AuthPage mode="login" /> },
           { path: "register", element: <AuthPage mode="register" /> },
+        ],
+      },
+      {
+        path: "/admin",
+        id: "admin",
+        loader: checkAuthLoader,
+        children: [
+          { index: true, element: <AdminPage />, loader: adminPostsLoader },
+          { path: "new", element: <NewPostPage /> },
+          { path: ":postId/edit", element: <EditPostPage />, loader: postLoader },
         ],
       },
       { path: "/logout", action: logoutAction },
