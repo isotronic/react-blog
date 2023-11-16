@@ -4,7 +4,7 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { Formik } from "formik";
 import * as yup from "yup";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { getAuthToken } from "../utils/auth";
 import { useState } from "react";
 
