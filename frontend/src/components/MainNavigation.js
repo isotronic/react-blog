@@ -23,7 +23,7 @@ function MainNavigation() {
         <Nav>
           {token && (
             <>
-              <Nav.Link as={NavLink} to="/admin">
+              <Nav.Link as={NavLink} to="/admin" end>
                 Admin
               </Nav.Link>
               <Nav.Link as={NavLink} to="/admin/new">
