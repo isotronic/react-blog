@@ -2,8 +2,9 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import { Formik } from "formik";
 import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
@@ -37,11 +38,11 @@ function AuthForm({ mode }) {
     });
   }
 
-  const initialValues = {
-    name: "",
-    email: "",
-    password: "",
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ resolver: yupResolver(schema) });
 
   async function submitHandler(values) {
     let authData = {
@@ -93,59 +94,49 @@ function AuthForm({ mode }) {
     <>
       <h1>{isLogin ? "Login" : "Register"}</h1>
       {authError && <p style={{ textAlign: "center" }}>{authError}</p>}
-      <Formik validationSchema={schema} onSubmit={submitHandler} initialValues={initialValues}>
-        {({ handleSubmit, handleChange, values, touched, errors }) => (
-          <Form noValidate method="post" onSubmit={handleSubmit}>
-            <Row className="justify-content-md-center">
-              <Col lg={6} xl={4}>
-                {!isLogin && (
-                  <Form.Group className="mb-3">
-                    <Form.Label>Name</Form.Label>
-                    <Form.Control
-                      name="name"
-                      type="text"
-                      value={values.name}
-                      onChange={handleChange}
-                      isValid={touched.name && !errors.name}
-                      isInvalid={!!errors.name}
-                    ></Form.Control>
-                    <Form.Control.Feedback type="invalid">{errors.name}</Form.Control.Feedback>
-                  </Form.Group>
-                )}
-                <Form.Group className="mb-3">
-                  <Form.Label>Email</Form.Label>
-                  <Form.Control
-                    name="email"
-                    type="email"
-                    value={values.email}
-                    onChange={handleChange}
-                    isValid={touched.email && !errors.email}
-                    isInvalid={!!errors.email}
-                  ></Form.Control>
-                  <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
-                </Form.Group>
-                <Form.Group className="mb-3">
-                  <Form.Label>Password</Form.Label>
-                  <Form.Control
-                    name="password"
-                    type="password"
-                    value={values.password}
-                    onChange={handleChange}
-                    isValid={touched.password && !errors.password}
-                    isInvalid={!!errors.password}
-                  ></Form.Control>
-                  <Form.Control.Feedback type="invalid">{errors.password}</Form.Control.Feedback>
-                </Form.Group>
-                <Form.Group className="float-end">
-                  <Button className="ms-3" variant="primary" type="submit">
-                    {isLogin ? "Login" : "Register"}
-                  </Button>
-                </Form.Group>
-              </Col>
-            </Row>
-          </Form>
-        )}
-      </Formik>
+      <Form noValidate method="post" onSubmit={handleSubmit(submitHandler)}>
+        <Row className="justify-content-md-center">
+          <Col lg={6} xl={4}>
+            {!isLogin && (
+              <Form.Group className="mb-3">
+                <Form.Label>Name</Form.Label>
+                <Form.Control
+                  name="name"
+                  type="text"
+                  isInvalid={!!errors.name}
+                  {...register("name")}
+                ></Form.Control>
+                <p className="errors">{errors.name?.message}</p>
+              </Form.Group>
+            )}
+            <Form.Group className="mb-3">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                name="email"
+                type="email"
+                isInvalid={!!errors.email}
+                {...register("email")}
+              ></Form.Control>
+              <p className="errors">{errors.email?.message}</p>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                name="password"
+                type="password"
+                isInvalid={!!errors.password}
+                {...register("password")}
+              ></Form.Control>
+              <p className="errors">{errors.password?.message}</p>
+            </Form.Group>
+            <Form.Group className="float-end">
+              <Button className="ms-3" variant="primary" type="submit">
+                {isLogin ? "Login" : "Register"}
+              </Button>
+            </Form.Group>
+          </Col>
+        </Row>
+      </Form>
     </>
   );
 }
