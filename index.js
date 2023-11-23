@@ -131,7 +131,7 @@ app.patch(
     if (!selectedPost) {
       return res.status(404).json({ message: "Post doesn't exist" });
     }
-    console.log(req.user);
+
     if (selectedPost.author.equals(req.user._id)) {
       if (req.body.title) selectedPost.title = req.body.title;
       if (req.body.content) selectedPost.content = req.body.content;
