@@ -1,21 +1,23 @@
 import { Suspense } from "react";
 import PostList from "../components/PostList";
 import { useLoaderData, json, defer, Await } from "react-router-dom";
-import usePageTitle from "../utils/usePageTitle";
+import HeaderSEO from "../components/HeaderSEO";
 
 function PostsPage() {
   const { posts } = useLoaderData();
-  usePageTitle("All Posts");
 
   return (
-    <Suspense fallback="Loading...">
-      <Await
-        resolve={posts}
-        errorElement={<p style={{ textAlign: "center" }}>There are no posts.</p>}
-      >
-        {(loadedPosts) => <PostList posts={loadedPosts} />}
-      </Await>
-    </Suspense>
+    <>
+      <HeaderSEO title="All Posts" description="View all the posts on the blog." />
+      <Suspense fallback="Loading...">
+        <Await
+          resolve={posts}
+          errorElement={<p style={{ textAlign: "center" }}>There are no posts.</p>}
+        >
+          {(loadedPosts) => <PostList posts={loadedPosts} />}
+        </Await>
+      </Suspense>
+    </>
   );
 }
 

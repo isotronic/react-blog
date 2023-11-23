@@ -1,10 +1,13 @@
 import PostForm from "../components/PostForm";
-import usePageTitle from "../utils/usePageTitle";
+import HeaderSEO from "../components/HeaderSEO";
 
 function NewPostPage() {
-  usePageTitle("New Post");
-
-  return <PostForm method="POST" />;
+  return (
+    <>
+      <HeaderSEO title="New Post" description="Create a new post." />
+      <PostForm method="POST" />
+    </>
+  );
 }
 
 export default NewPostPage;

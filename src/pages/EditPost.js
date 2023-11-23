@@ -1,12 +1,16 @@
 import { useLoaderData } from "react-router";
 import PostForm from "../components/PostForm";
-import usePageTitle from "../utils/usePageTitle";
+import HeaderSEO from "../components/HeaderSEO";
 
 function EditPostPage() {
   const { post } = useLoaderData();
-  usePageTitle(`Edit: ${post.title}`);
 
-  return <PostForm method="PATCH" post={post} />;
+  return (
+    <>
+      <HeaderSEO title={`Edit: ${post.title}`} description="Edit your post." />
+      <PostForm method="PATCH" post={post} />
+    </>
+  );
 }
 
 export default EditPostPage;

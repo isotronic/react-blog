@@ -2,9 +2,8 @@ import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
-import { LinkContainer } from "react-router-bootstrap";
 import { useState } from "react";
-import { useNavigate, useRouteLoaderData } from "react-router-dom";
+import { useNavigate, useRouteLoaderData, NavLink } from "react-router-dom";
 
 function PostList({ posts, admin }) {
   const [error, setError] = useState();
@@ -54,11 +53,14 @@ function PostList({ posts, admin }) {
 
                   {admin && token && (
                     <>
-                      <LinkContainer to={`/admin/${post._id}/edit`}>
-                        <Button variant="primary" className="m-2">
-                          Edit
-                        </Button>
-                      </LinkContainer>
+                      <Button
+                        as={NavLink}
+                        to={`/admin/${post._id}/edit`}
+                        variant="primary"
+                        className="m-2"
+                      >
+                        Edit
+                      </Button>
                       <Button
                         variant="warning"
                         className="m-2"
@@ -69,11 +71,14 @@ function PostList({ posts, admin }) {
                     </>
                   )}
                   {!admin && (
-                    <LinkContainer to={`/posts/${post._id}`}>
-                      <Button variant="secondary" className="m-2">
-                        To Post
-                      </Button>
-                    </LinkContainer>
+                    <Button
+                      as={NavLink}
+                      to={`/posts/${post._id}`}
+                      variant="secondary"
+                      className="m-2"
+                    >
+                      To Post
+                    </Button>
                   )}
                 </Card.Body>
               </Card>

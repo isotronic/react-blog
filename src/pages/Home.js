@@ -1,8 +1,12 @@
-import usePageTitle from "../utils/usePageTitle";
+import HeaderSEO from "../components/HeaderSEO";
 
 function HomePage() {
-  usePageTitle("Home");
-  return <h1>Welcome</h1>;
+  return (
+    <>
+      <HeaderSEO title="Home" description="A simple React Blog." />
+      <h1>Welcome</h1>
+    </>
+  );
 }
 
 export default HomePage;

@@ -1,9 +1,7 @@
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-import { Form, useRouteLoaderData } from "react-router-dom";
-
-import { LinkContainer } from "react-router-bootstrap";
+import { Form, useRouteLoaderData, NavLink } from "react-router-dom";
 
 function MainNavigation() {
   const token = useRouteLoaderData("root");
@@ -11,26 +9,26 @@ function MainNavigation() {
   return (
     <Navbar sticky="top" bg="dark" data-bs-theme="dark">
       <Container>
-        <LinkContainer to="/">
-          <Navbar.Brand>Blog</Navbar.Brand>
-        </LinkContainer>
+        <Navbar.Brand as={NavLink} to="/">
+          Blog
+        </Navbar.Brand>
         <Nav className="me-auto">
-          <LinkContainer to="/">
-            <Nav.Link>Home</Nav.Link>
-          </LinkContainer>
-          <LinkContainer to="/posts">
-            <Nav.Link>Posts</Nav.Link>
-          </LinkContainer>
+          <Nav.Link as={NavLink} to="/">
+            Home
+          </Nav.Link>
+          <Nav.Link as={NavLink} to="/posts">
+            Posts
+          </Nav.Link>
         </Nav>
         <Nav>
           {token && (
             <>
-              <LinkContainer to="/admin">
-                <Nav.Link>Admin</Nav.Link>
-              </LinkContainer>
-              <LinkContainer to="/admin/new">
-                <Nav.Link>New Post</Nav.Link>
-              </LinkContainer>
+              <Nav.Link as={NavLink} to="/admin">
+                Admin
+              </Nav.Link>
+              <Nav.Link as={NavLink} to="/admin/new">
+                New Post
+              </Nav.Link>
               <Form action="/logout" method="post">
                 <Nav.Link as="button">Logout</Nav.Link>
               </Form>
@@ -38,12 +36,12 @@ function MainNavigation() {
           )}
           {!token && (
             <>
-              <LinkContainer to="/auth/login">
-                <Nav.Link>Login</Nav.Link>
-              </LinkContainer>
-              <LinkContainer to="/auth/register">
-                <Nav.Link>Register</Nav.Link>
-              </LinkContainer>
+              <Nav.Link as={NavLink} to="/auth/login">
+                Login
+              </Nav.Link>
+              <Nav.Link as={NavLink} to="/auth/register">
+                Register
+              </Nav.Link>
             </>
           )}
         </Nav>

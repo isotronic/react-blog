@@ -11,6 +11,7 @@ import AuthPage from "./pages/Auth";
 import { checkAuthLoader, tokenLoader } from "./utils/auth";
 import { logoutAction } from "./pages/Logout";
 import AdminPage, { adminPostsLoader } from "./pages/Admin";
+import { HelmetProvider } from "react-helmet-async";
 
 const router = createBrowserRouter([
   {
@@ -57,7 +58,11 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <HelmetProvider>
+      <RouterProvider router={router} />
+    </HelmetProvider>
+  );
 }
 
 export default App;

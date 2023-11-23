@@ -1,10 +1,9 @@
 import { useRouteError } from "react-router";
 import MainNavigation from "../components/MainNavigation";
-import usePageTitle from "../utils/usePageTitle";
+import HeaderSEO from "../components/HeaderSEO";
 
 function ErrorPage() {
   const error = useRouteError();
-  usePageTitle("Error");
 
   let title = "An error occured!";
   let message = "Something went wrong.";
@@ -20,6 +19,7 @@ function ErrorPage() {
 
   return (
     <>
+      <HeaderSEO title="Error" description="Error page." />
       <MainNavigation />
       <main>
         <h1>{title}</h1>

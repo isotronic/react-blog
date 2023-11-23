@@ -1,17 +1,18 @@
 import { Suspense } from "react";
 import { Await, defer, json, useLoaderData } from "react-router-dom";
 import PostView from "../components/PostView";
-import usePageTitle from "../utils/usePageTitle";
+import HeaderSEO from "../components/HeaderSEO";
 
 function SinglePostPage() {
   const { post } = useLoaderData();
 
-  usePageTitle(post.title);
-
   return (
-    <Suspense fallback="Loading...">
-      <Await resolve={post}>{(loadedPost) => <PostView post={loadedPost} />}</Await>
-    </Suspense>
+    <>
+      <HeaderSEO title={post.title} description={post.content.slice(0, 150)} />
+      <Suspense fallback="Loading...">
+        <Await resolve={post}>{(loadedPost) => <PostView post={loadedPost} />}</Await>
+      </Suspense>
+    </>
   );
 }
 
