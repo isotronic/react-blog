@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import PostList from "../components/PostList";
 import { useLoaderData, json, defer, Await } from "react-router-dom";
+import { getAuthToken } from "../utils/auth";
 import HeaderSEO from "../components/HeaderSEO";
 
 function AdminPage() {
@@ -23,8 +24,18 @@ function AdminPage() {
 
 export default AdminPage;
 
-async function loadPostsFromAuthor(userId) {
-  const response = await fetch("http://localhost:4000/posts/author/" + userId);
+async function loadPostsFromAuthor() {
+  const token = getAuthToken();
+  if (token === "EXPIRED")
+    throw json({ message: "Your token has expired. Please login again." }, { status: 401 });
+
+  const response = await fetch("http://localhost:4000/admin/posts", {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+  });
 
   if (!response.ok) {
     throw json({ message: "Could not load posts." }, { status: 500 });
@@ -35,8 +46,7 @@ async function loadPostsFromAuthor(userId) {
 }
 
 export function adminPostsLoader() {
-  const userId = localStorage.getItem("userId");
   return defer({
-    posts: loadPostsFromAuthor(userId),
+    posts: loadPostsFromAuthor(),
   });
 }

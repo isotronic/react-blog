@@ -65,19 +65,12 @@ app.get("/posts/:id", param("id").trim().notEmpty().isMongoId(), async (req, res
 });
 
 // Retrieve all posts by author (HTTP GET request)
-app.get("/posts/author/:id", param("id").trim().notEmpty().isMongoId(), async (req, res) => {
-  const result = validationResult(req).isEmpty();
-  if (!result) {
-    return res
-      .status(422)
-      .json({ title: "Invalid request", message: "ID is not a valid ObjectId" });
-  }
-
-  const authorId = req.params.id;
+app.get("/admin/posts", authenticate, async (req, res) => {
+  const authorId = req.user._id;
   const allPosts = await Post.find({ author: authorId }).populate("author").sort({ date: -1 });
 
   if (allPosts.length < 1) {
-    return res.status(404).json({ message: "Author doesn't have any posts" });
+    return res.status(404).json({ message: "You don't have any posts" });
   }
 
   res.status(201).json(allPosts);
