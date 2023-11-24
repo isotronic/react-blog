@@ -24,7 +24,7 @@ export async function register(req, res, next) {
     const user = new User({ name, email, password });
     await user.save();
     const token = jwt.sign({ userId: user._id }, SECRET_KEY, { expiresIn: "1 hour" });
-    res.json({ token });
+    res.json({ token, userId: user._id });
   } catch (error) {
     next(error);
   }
