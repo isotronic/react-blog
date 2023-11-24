@@ -79,10 +79,10 @@ function AuthForm({ mode }) {
     const resData = await response.json();
     const token = resData.token;
 
-    localStorage.setItem("token", token);
+    sessionStorage.setItem("token", token);
     const expiration = new Date();
     expiration.setHours(expiration.getHours() + 1);
-    localStorage.setItem("expiration", expiration.toISOString());
+    sessionStorage.setItem("expiration", expiration.toISOString());
 
     navigate("/");
     return navigate(0);
