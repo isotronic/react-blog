@@ -12,6 +12,8 @@ import { checkAuthLoader, tokenLoader } from "./utils/auth";
 import { logoutAction } from "./pages/Logout";
 import AdminPage, { adminPostsLoader } from "./pages/Admin";
 import { HelmetProvider } from "react-helmet-async";
+import ForgotPasswordPage from "./pages/ForgotPassword";
+import ResetPasswordPage from "./pages/ResetPassword";
 
 const router = createBrowserRouter([
   {
@@ -53,6 +55,13 @@ const router = createBrowserRouter([
         ],
       },
       { path: "/logout", action: logoutAction },
+      {
+        path: "/password",
+        children: [
+          { path: "forgot", element: <ForgotPasswordPage /> },
+          { path: "reset", element: <ResetPasswordPage /> },
+        ],
+      },
     ],
   },
 ]);

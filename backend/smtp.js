@@ -20,7 +20,7 @@ const transporter = nodemailer.createTransport({
 
 export async function sendEmail(resetToken, email) {
   const htmlBody = `<h2>Password reset link</h2><p>Click the password reset link and choose a new password: <a href='${FRONTEND_URL}passwordreset?token=${resetToken}'>Reset your password</a></p>`;
-  const plainTextBody = `Your password reset link: ${FRONTEND_URL}passwordreset?token=${resetToken}`;
+  const plainTextBody = `Your password reset link: ${FRONTEND_URL}password/reset?token=${resetToken}`;
 
   const mail = await transporter.sendMail({
     from: `'React Blog' <${FROM_ADDRESS}>`,

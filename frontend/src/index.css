@@ -23,3 +23,7 @@ h1 {
   color: red;
   font-size: 75%;
 }
+
+.centered {
+  text-align: center;
+}
