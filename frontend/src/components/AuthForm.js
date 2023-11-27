@@ -88,10 +88,14 @@ function AuthForm({ mode }) {
     return navigate(0);
   }
 
+  function forgotPasswordHandler() {
+    return navigate("/password/forgot");
+  }
+
   return (
     <>
       <h1>{isLogin ? "Login" : "Register"}</h1>
-      {authError && <p style={{ textAlign: "center" }}>{authError}</p>}
+      {authError && <p className="centered">{authError}</p>}
       <Form noValidate method="post" onSubmit={handleSubmit(submitHandler)}>
         <Row className="justify-content-md-center">
           <Col lg={6} xl={4}>
@@ -128,6 +132,11 @@ function AuthForm({ mode }) {
               <p className="errors">{errors.password?.message}</p>
             </Form.Group>
             <Form.Group className="float-end">
+              {isLogin && (
+                <Button className="ms-3" variant="secondary" onClick={forgotPasswordHandler}>
+                  Forgot your password?
+                </Button>
+              )}
               <Button className="ms-3" variant="primary" type="submit">
                 {isLogin ? "Login" : "Register"}
               </Button>
