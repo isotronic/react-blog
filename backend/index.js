@@ -3,7 +3,14 @@ import bodyParser from "body-parser";
 import "dotenv/config";
 import { body, param, validationResult } from "express-validator";
 import { connectDB, Post } from "./db.js";
-import { authenticate, login, register } from "./auth.js";
+import {
+  authenticate,
+  login,
+  register,
+  sendResetToken,
+  verifyResetToken,
+  resetPassword,
+} from "./auth.js";
 
 const app = express();
 const { PORT = 4000 } = process.env;
@@ -36,6 +43,20 @@ app.post(
   body("email").trim().notEmpty().isString().isEmail(),
   body("password").trim().notEmpty().isString(),
   login
+);
+
+// Request a password reset link (HTTP POST request)
+app.post("/password/forgot", body("email").trim().notEmpty().isString().isEmail(), sendResetToken);
+
+// Reset the user's password (HTTP PATCH request)
+app.patch(
+  "/password/reset",
+  body("password").trim().notEmpty().isString(),
+  verifyResetToken,
+  resetPassword,
+  async (req, res) => {
+    res.status(201).json({ message: "Password reset successful" });
+  }
 );
 
 // Retrieve all posts (HTTP GET request)

@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import "dotenv/config";
 import { validationResult } from "express-validator";
 import { User } from "./db.js";
+import { sendEmail } from "./smtp.js";
 
 const { SECRET_KEY } = process.env;
 
@@ -77,5 +78,75 @@ export async function authenticate(req, res, next) {
     next();
   } catch (error) {
     res.status(401).json({ message: "Token is invalid" });
+  }
+}
+
+export async function sendResetToken(req, res, next) {
+  const result = validationResult(req).isEmpty();
+  if (!result) {
+    const errors = validationResult(req).mapped();
+    return res.status(422).json(errors);
+  }
+
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User doesn't exist" });
+    }
+
+    const resetToken = jwt.sign({ userId: user._id }, SECRET_KEY, { expiresIn: 600 });
+    sendEmail(resetToken, email);
+
+    return res.status(201).json({ message: "Password reset link has been sent" });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function verifyResetToken(req, res, next) {
+  const resetToken = req.headers.authorization?.split(" ")[1];
+
+  if (!resetToken) {
+    return res.status(401).json({ message: "Authentication required" });
+  }
+
+  try {
+    const decodedToken = jwt.verify(resetToken, SECRET_KEY);
+    const user = await User.findOne({ _id: decodedToken.userId });
+    if (!user) {
+      return res.status(404).json({ message: "User doesn't exist" });
+    }
+
+    req.user = user;
+    next();
+  } catch (error) {
+    res.status(401).json({ message: "Token is invalid" });
+  }
+}
+
+export async function resetPassword(req, res, next) {
+  const result = validationResult(req).isEmpty();
+  if (!result) {
+    const errors = validationResult(req).mapped();
+    return res.status(422).json(errors);
+  }
+
+  const { password } = req.body;
+  const email = req.user.email;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User doesn't exist" });
+    }
+
+    user.password = password;
+    await user.save();
+
+    next();
+  } catch (error) {
+    next(error);
   }
 }
