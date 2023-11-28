@@ -1,14 +1,15 @@
 # react-blog
 
-A blog built with React and Bootstrap that fetches data from a backend API running on NodeJS and Express with MongoDB.
-
+A blog built with React and Bootstrap that fetches data from a backend API running on NodeJS and Express with MongoDB. You can register and create new posts, see, edit and delete the posts you created, and recover your password using your email address. To read all the posts you don't need to be logged in.
 
 ## Install
 
 To install all the dependencies, run:
+
 ```
 yarn
 ```
+
 Then, you need to create a .env file in the backend folder.
 
 ### Example .env
@@ -16,9 +17,14 @@ Then, you need to create a .env file in the backend folder.
 ```
 MONGODB_URI=mongodb://127.0.0.1:27017/exampleDB
 SECRET_KEY=yoursecretkey
-PORT=8080
+PORT=4000
+FROM_ADDRESS=example@email.com
+EMAIL_PASSWORD=password
+SMTP_HOST=smtp.example.com
+FRONTEND_URL=http://localhost:3000/
 ```
-If you don't set the port for the backend in the .env file, it will use port 4000 as the default.
+
+If you don't set the PORT for the backend in the .env file, it will use port 4000 as the default and the FRONTEND_URL will default to localhost:3000.
 
 ## Run
 
@@ -33,6 +39,14 @@ If you dislike using React, you can create your frontend with any language you l
 #### /register (POST)
 
 Accepts a name, email address and password, the user is created and logged in, and you get a token and the userId as the response.
+
+#### /password/forgot (POST)
+
+Accepts an email address and sends an email with a password reset link to that address.
+
+#### /password/reset (PATCH)
+
+Accepts a password and changes it in the database using the token as verification for that user.
 
 #### /login (POST)
 
