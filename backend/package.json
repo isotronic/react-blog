@@ -20,5 +20,8 @@
     "mongodb": "^6.1.0",
     "mongoose": "^7.6.3",
     "nodemailer": "^6.9.7"
+  },
+  "devDependencies": {
+    "eslint": "^8.55.0"
   }
 }
