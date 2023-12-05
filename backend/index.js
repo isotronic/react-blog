@@ -2,7 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import "dotenv/config";
 import { body, param, validationResult } from "express-validator";
-import { connectDB, Post } from "./db.js";
+import { connectDB, Post, User } from "./db.js";
 import {
   authenticate,
   login,
@@ -63,7 +63,7 @@ app.patch(
 app.get("/posts", async (req, res) => {
   const allPosts = await Post.find().populate("author").sort({ date: -1 });
 
-  res.status(201).json(allPosts);
+  res.status(200).json(allPosts);
 });
 
 // Retrieve a specific post by ID (HTTP GET request)
@@ -82,7 +82,7 @@ app.get("/posts/:id", param("id").trim().notEmpty().isMongoId(), async (req, res
     return res.status(404).json({ message: "Post doesn't exist" });
   }
 
-  res.status(201).json(selectedPost);
+  res.status(200).json(selectedPost);
 });
 
 // Retrieve all posts by author (HTTP GET request)
@@ -94,7 +94,7 @@ app.get("/admin/posts", authenticate, async (req, res) => {
     return res.status(404).json({ message: "You don't have any posts" });
   }
 
-  res.status(201).json(allPosts);
+  res.status(200).json(allPosts);
 });
 
 // Create a new post (HTTP POST request)
@@ -183,12 +183,25 @@ app.delete(
     if (selectedPost.author.equals(req.user._id)) {
       await Post.deleteOne({ _id: postId });
 
-      res.status(201).json({ message: "Post deleted", selectedPost });
+      res.status(200).json({ message: "Post deleted", selectedPost });
     } else {
       return res.status(401).json({ message: "You are not authorized to delete this post" });
     }
   }
 );
+
+// Delete the logged in user (HTTP DELETE request)
+app.delete("/delete-user", authenticate, async (req, res) => {
+  const userId = req.user._id;
+  const selectedUser = await User.findById(userId).exec();
+
+  if (!selectedUser) {
+    return res.status(404).json({ message: "User doesn't exist" });
+  }
+
+  await User.deleteOne({ _id: userId });
+  res.status(200).json({ message: "User deleted", selectedUser });
+});
 
 // Start the Express app and listen on the specified port
 app.listen(PORT, () => console.log(`App is listening on port: ${PORT}.`));
