@@ -24,7 +24,7 @@ SMTP_HOST=smtp.example.com
 FRONTEND_URL=http://localhost:3000/
 ```
 
-If you don't set the PORT for the backend in the .env file, it will use port 4000 as the default and the FRONTEND_URL will default to localhost:3000.
+If you don't set the PORT for the backend in the .env file, it will use port 4000 as the default and the FRONTEND_URL will default to localhost:3000, which is used for creating the password reset link.
 
 ## Run
 
@@ -60,9 +60,9 @@ Responds with all the blog posts in the database.
 
 Responds with the post with the given ID.
 
-#### /posts/author/:id (GET)
+#### /admin/posts (GET)
 
-Responds with all the posts by the author with the given ID.
+Responds with all the posts by the logged in user.
 
 #### /new (POST)
 

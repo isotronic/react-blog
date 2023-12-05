@@ -25,7 +25,7 @@ export async function register(req, res, next) {
     const user = new User({ name, email, password });
     await user.save();
     const token = jwt.sign({ userId: user._id }, SECRET_KEY, { expiresIn: "1 hour" });
-    res.json({ token });
+    res.status(201).json({ token });
   } catch (error) {
     next(error);
   }
@@ -53,7 +53,7 @@ export async function login(req, res, next) {
     }
 
     const token = jwt.sign({ userId: user._id }, SECRET_KEY, { expiresIn: "1 hour" });
-    res.json({ token });
+    res.status(200).json({ token });
   } catch (error) {
     next(error);
   }
@@ -81,6 +81,7 @@ export async function authenticate(req, res, next) {
   }
 }
 
+// Send a password reset link to the user's email address
 export async function sendResetToken(req, res, next) {
   const result = validationResult(req).isEmpty();
   if (!result) {
@@ -99,12 +100,13 @@ export async function sendResetToken(req, res, next) {
     const resetToken = jwt.sign({ userId: user._id }, SECRET_KEY, { expiresIn: 600 });
     sendEmail(resetToken, email);
 
-    return res.status(201).json({ message: "Password reset link has been sent" });
+    return res.status(200).json({ message: "Password reset link has been sent" });
   } catch (error) {
     next(error);
   }
 }
 
+// Verify the password reset token
 export async function verifyResetToken(req, res, next) {
   const resetToken = req.headers.authorization?.split(" ")[1];
 
@@ -126,6 +128,7 @@ export async function verifyResetToken(req, res, next) {
   }
 }
 
+// Reset the user's password
 export async function resetPassword(req, res, next) {
   const result = validationResult(req).isEmpty();
   if (!result) {
