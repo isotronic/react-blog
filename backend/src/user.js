@@ -27,6 +27,7 @@ export async function register(req, res, next) {
     const token = jwt.sign({ userId: user._id }, SECRET_KEY, { expiresIn: "1 hour" });
     res.status(201).json({ token });
   } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
     next(error);
   }
 }
@@ -55,6 +56,7 @@ export async function login(req, res, next) {
     const token = jwt.sign({ userId: user._id }, SECRET_KEY, { expiresIn: "1 hour" });
     res.status(200).json({ token });
   } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
     next(error);
   }
 }
@@ -102,13 +104,21 @@ export async function sendResetToken(req, res, next) {
 
     return res.status(200).json({ message: "Password reset link has been sent" });
   } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
     next(error);
   }
 }
 
-// Verify the password reset token
-export async function verifyResetToken(req, res, next) {
+// Verify the password reset token and reset the user's password
+export async function resetPassword(req, res, next) {
+  const result = validationResult(req).isEmpty();
+  if (!result) {
+    const errors = validationResult(req).mapped();
+    return res.status(422).json(errors);
+  }
+
   const resetToken = req.headers.authorization?.split(" ")[1];
+  const { password } = req.body;
 
   if (!resetToken) {
     return res.status(401).json({ message: "Authentication required" });
@@ -121,35 +131,28 @@ export async function verifyResetToken(req, res, next) {
       return res.status(404).json({ message: "User doesn't exist" });
     }
 
-    req.user = user;
-    next();
-  } catch (error) {
-    res.status(401).json({ message: "Token is invalid" });
-  }
-}
-
-// Reset the user's password
-export async function resetPassword(req, res, next) {
-  const result = validationResult(req).isEmpty();
-  if (!result) {
-    const errors = validationResult(req).mapped();
-    return res.status(422).json(errors);
-  }
-
-  const { password } = req.body;
-  const email = req.user.email;
-
-  try {
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ message: "User doesn't exist" });
-    }
-
     user.password = password;
     await user.save();
 
+    res.status(201).json({ message: "Password reset successful" });
     next();
   } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
     next(error);
   }
+}
+
+// Delete the logged in user
+export async function deleteUser(req, res, next) {
+  const userId = req.user._id;
+  const selectedUser = await User.findById(userId).exec();
+
+  if (!selectedUser) {
+    return res.status(404).json({ message: "User doesn't exist" });
+  }
+
+  await User.deleteOne({ _id: userId });
+
+  res.status(200).json({ message: "User deleted", selectedUser });
+  next();
 }

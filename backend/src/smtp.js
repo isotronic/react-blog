@@ -29,4 +29,6 @@ export async function sendEmail(resetToken, email) {
     text: plainTextBody,
     html: htmlBody,
   });
+
+  return mail;
 }
