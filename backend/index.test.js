@@ -1,6 +1,6 @@
 // Tests for all the API endpoints
-const request = require("supertest");
-require("dotenv").config();
+import request from "supertest";
+import "dotenv/config";
 
 const baseURL = "http://localhost:4000";
 const { FROM_ADDRESS } = process.env;
