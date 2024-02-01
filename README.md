@@ -1,6 +1,14 @@
 # react-blog
 
-A blog built with React and Bootstrap that fetches data from a backend API running on NodeJS and Express with MongoDB. You can register and create new posts, see, edit and delete the posts you created, and recover your password using your email address. To read all the posts you don't need to be logged in.
+A full-stack blog application built with React, Bootstrap, and a backend API running on Node.js and Express with MongoDB. The project enables users to register, create, edit, delete posts, and recover passwords through email. The frontend fetches data from the backend API to deliver a seamless blogging experience.
+
+## Features
+
+- **User Authentication:** Register and log in securely. Password recovery is also implemented using email verification.
+
+- **CRUD Operations:** Create, read, update, and delete blog posts. Users can manage their own posts.
+
+- **Responsive Design:** The React frontend, built with Bootstrap, ensures a responsive and user-friendly experience on various devices.
 
 ## Install
 
@@ -10,9 +18,7 @@ To install all the dependencies, run:
 yarn
 ```
 
-Then, you need to create a .env file in the backend folder.
-
-### Example .env
+Create a `.env` file in the `backend` folder. Example:
 
 ```
 MONGODB_URI=mongodb://127.0.0.1:27017/exampleDB
@@ -32,46 +38,46 @@ If you don't set the PORT for the backend in the .env file, it will use port 400
 yarn start
 ```
 
-## Backend API endpoints
+## Backend API Endpoints
 
-If you dislike using React, you can create your frontend with any language you like and only use the backend API.
+You can use the backend API with any frontend language. Below are the available endpoints:
 
-#### /register (POST)
+### `/register` (POST)
 
-Accepts a name, email address and password, the user is created and logged in, and you get a token and the userId as the response.
+Creates a user and returns a token and userId.
 
-#### /password/forgot (POST)
+### `/password/forgot` (POST)
 
-Accepts an email address and sends an email with a password reset link to that address.
+Sends a password reset email to the provided address.
 
-#### /password/reset (PATCH)
+### `/password/reset` (PATCH)
 
-Accepts a password and changes it in the database using the token as verification for that user.
+Changes the password in the database using the provided token.
 
-#### /login (POST)
+### `/login` (POST)
 
-Accepts an email address and password, the user is logged in, and you get a token and the userId as the response.
+Logs in the user and returns a token and userId.
 
-#### /posts (GET)
+### `/posts` (GET)
 
-Responds with all the blog posts in the database.
+Returns all blog posts in the database.
 
-#### /posts/:id (GET)
+### `/posts/:id` (GET)
 
-Responds with the post with the given ID.
+Returns the post with the given ID.
 
-#### /admin/posts (GET)
+### `/admin/posts` (GET)
 
-Responds with all the posts by the logged in user.
+Returns all posts by the logged-in user.
 
-#### /new (POST)
+### `/new` (POST)
 
-Requires a title, imageURL and content and creates the blog post.
+Creates a new blog post.
 
-#### /edit/:id (PATCH)
+### `/edit/:id` (PATCH)
 
-The title, imageURL and content fields are optional in this case and it will update every populated field of the post with the given ID.
+Updates the post with the given ID.
 
-#### /delete/:id (DELETE)
+### `/delete/:id` (DELETE)
 
-The post with the given ID will be deleted.
+Deletes the post with the given ID.
